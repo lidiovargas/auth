@@ -1,0 +1,61 @@
+# Dockerfile para produção do Auth
+
+# --- Estágio 1: Builder (Compila tudo) ---
+FROM node:22-alpine AS builder
+WORKDIR /app
+
+# 1. Copiamos a biblioteca de schemas PRIMEIRO
+# Nota: Isso exige que o contexto do build seja a pasta raiz do monorepo
+COPY schemas ./schemas
+
+# 2. Instalamos e buildamos os schemas
+WORKDIR /app/schemas
+RUN npm install
+RUN npm run build 
+# (Isso garante que a pasta dist/ ou os arquivos .ts finais existam)
+
+# 3. Agora cuidamos do serviço Auth
+WORKDIR /app/auth
+COPY auth/package*.json ./
+
+# 4. Truque para instalar a dependência local sem volume
+# Alteramos o package.json em tempo de build ou usamos npm install direto da pasta
+# Mas a forma mais limpa em Docker puro é copiar a lib compilada para dentro do node_modules manualmente
+# ou usar 'npm install /app/schemas'
+RUN npm install
+
+COPY auth/ . 
+# Se você tiver um script de build no auth (ex: babel), rode aqui:
+RUN npm run build
+
+# --- Estágio 2: Runner (Imagem final leve) ---
+FROM node:22-alpine
+WORKDIR /app
+ENV NODE_ENV=production
+
+# Install Python and its dependencies
+RUN apk --update add --no-cache python3 curl
+
+# Copia do estágio builder apenas o que é necessário
+COPY --from=builder /app/auth /app
+
+# E precisamos copiar a lib schemas compilada para o lugar certo
+WORKDIR /app/node_modules/@lidiovargas/schemas
+COPY --from=builder /app/schemas/package.json .
+COPY --from=builder /app/schemas/dist ./dist
+COPY --from=builder /app/schemas/readme.md .
+# (Opcional) Se você usa source maps ou precisa dos tipos originais, copie src.
+# Mas para produção pura, 'dist' costuma bastar.
+COPY --from=builder /app/schemas/src ./src
+WORKDIR /app
+
+EXPOSE 4010
+
+CMD ["npm", "start"]
+
+### Exemplos para build manual
+# Necessário rodar uma pasta antes de `auth` (../), com comando
+# cd ../ && docker build -f auth/Dockerfile.prod . -t auth-prod
+### Para verificar se os arquivos estão no lugar correto no container:
+# docker run --rm -it auth-prod sh
+# ls -F node_modules/@lidiovargas/schemas/

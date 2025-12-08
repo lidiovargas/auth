@@ -14,10 +14,6 @@ services:
         aliases: [auth_service]
       mongo_net:
         aliases: [auth_service]
-    volumes:
-      # Mapeia schemas (apenas arquivos necessários) (= biblioteca sem uso de NPM)
-      - ../schemas/package.json:/app/node_modules/@lidiovargas/schemas/package.json
-      - ../schemas/src:/app/node_modules/@lidiovargas/schemas/src
     env_file:
       - .env
 

@@ -1,6 +1,13 @@
 services:
   auth:
+    # Em produção, geralmente usamos uma imagem pre-buildada e tagueada
+    # image: ghcr.io/seu-usuario/auth:v1.0.0
+    build:
+      # Contexto na Raiz do Monorepo, para poder acessar `schemas` e `auth` no Dockerfile.prod
+      context: '../'
+      dockerfile: auth/Dockerfile.prod
     expose:
       - 4010
     environment:
       - NODE_ENV=production
+    command: npm start
