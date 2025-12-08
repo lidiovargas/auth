@@ -1,0 +1,56 @@
+### sem proxy
+# @api=http://localhost:4010
+### com proxy habilitado
+@api=http://localhost/api/auth 
+
+### Teste Geral
+GET {{api}}/
+
+### LOGIN
+POST {{api}}/login
+Content-Type: application/json
+
+{
+  "email": "vargas.lidio@gmail.com",
+  "password": "ojupitas"
+}
+
+### LOGOUT
+POST {{api}}/logout
+
+### SignUp
+POST {{api}}/signup
+Content-Type: application/json
+
+{
+  "name": "ruanss",
+  "email": "ruan@marcozs.com",
+  "password": "senha"
+}
+
+### FORGOT PASSWORD
+POST {{api}}/forgot-password
+Content-Type: application/json
+
+{
+  "email": "vargas.lidio@gmail.com"
+}
+
+
+### VERIFY RESET TOKEN -- SUCCESS
+GET {{api}}/verify-reset-token/ed14c457c49ffbe785545c905c50db4eac49c97302a24a7fb2a33f752a77ac1f15278d3194b19bcea662254919bad6e4216df52496a4d194eb00e358284a4920
+
+
+### VERIFY RESET TOKEN -- ERROR: invalid
+GET {{api}}/verify-reset-token/abc
+
+
+### RESET PASSWORD ---  SUCCESS: ALL VALID
+PATCH {{api}}/reset-password
+Content-Type: application/json
+
+{
+  "token": "ed14c457c49ffbe785545c905c50db4eac49c97302a24a7fb2a33f752a77ac1f15278d3194b19bcea662254919bad6e4216df52496a4d194eb00e358284a4920",
+  "password": "blableblibloblu",
+  "passwordConfirm": "blableblibloblu"
+}

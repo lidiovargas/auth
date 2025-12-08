@@ -1,0 +1,28 @@
+services:
+  auth:
+    container_name: auth
+    restart: always
+    healthcheck:
+      # O comando verifica a rota /health na porta 4010 dentro do container.
+      test: ['CMD', 'curl', '--fail', 'http://localhost:4010/health']
+      interval: 30s # Executar a cada 30 segundos
+      timeout: 10s # Esperar no máximo 10 segundos pela resposta
+      retries: 3 # Considerar "unhealthy" após 3 falhas consecutivas
+      start_period: 15s # Dar 15s para a aplicação iniciar antes de considerar falhas
+    networks:
+      http_proxy_net:
+        aliases: [auth_service]
+      mongo_net:
+        aliases: [auth_service]
+    volumes:
+      # Mapeia schemas (apenas arquivos necessários) (= biblioteca sem uso de NPM)
+      - ../schemas/package.json:/app/node_modules/@lidiovargas/schemas/package.json
+      - ../schemas/src:/app/node_modules/@lidiovargas/schemas/src
+    env_file:
+      - .env
+
+networks:
+  http_proxy_net:
+    external: true
+  mongo_net:
+    external: true

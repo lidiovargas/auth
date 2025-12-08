@@ -1,0 +1,50 @@
+services:
+  auth:
+    build:
+      context: './'
+      dockerfile: Dockerfile.dev
+    depends_on:
+      mailpit:
+        condition: service_healthy # Espera o healthcheck passar
+    ports:
+      # A porta interna do container é 4010, que é a porta que o healthcheck deve usar.
+      # A porta externa (4010) é como você acessa do seu host.
+      - 127.0.0.1:4010:4010
+    # Carrega TODAS as variáveis do arquivo .env automaticamente
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./package.json
+          target: /app
+        - action: sync+restart
+          path: ./.env.dev
+          target: /app/.env.dev
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: mailpit
+    restart: always
+    ports:
+      - '8025:8025' # Interface Web (Acesse http://localhost:8025)
+      - '1025:1025' # Porta SMTP (Onde sua API vai conectar)
+    networks:
+      - http_proxy_net
+    healthcheck:
+      test:
+        ['CMD', 'wget', '--spider', '-q', 'http://localhost:8025/api/v1/info']
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 2s
+
+networks:
+  http_proxy_net:
+    external: true

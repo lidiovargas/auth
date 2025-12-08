@@ -1,0 +1,6 @@
+services:
+  auth:
+    expose:
+      - 4010
+    environment:
+      - NODE_ENV=production
