@@ -10,20 +10,19 @@ router.get('/health', (req, res) => {
     message: 'OK',
     timestamp: Date.now(),
     // Opcional: Adicionar status de dependências (ex: banco de dados)
-    database:
-      mongoose.connection.readyState === 1 ? 'connected' : 'disconnected', // 1 = connected
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected', // 1 = connected
   };
 
   try {
     // Se você incluiu a verificação do DB e ele não está conectado, retorne um erro
     if (mongoose.connection.readyState !== 1) {
-      return res
-        .status(503)
-        .send({ status: 'error', message: 'Database disconnected' });
+      console.error('Healthcheck: Database disconnected');
+      return res.status(503).send({ status: 'error', message: 'Database disconnected' });
     }
 
     res.status(200).send(healthcheck); // Retorna 200 OK com algumas infos
   } catch (e) {
+    console.error('Healthcheck: Database disconnected');
     healthcheck.message = e.message;
     res.status(503).send(); // 503 Service Unavailable indica que o serviço está temporariamente fora
   }

@@ -6,20 +6,15 @@ WORKDIR /app
 
 # 1. Copiamos a biblioteca de schemas PRIMEIRO
 # Nota: Isso exige que o contexto do build seja a pasta raiz do monorepo
-COPY schemas ./schemas
+COPY schemas /app/schemas
+WORKDIR /app/schemas
+RUN npm install && npm run build
 
 # 2. Errors (NOVO)
 # Como errors é puro JS e não tem build step (tsc), basta copiar
-COPY errors ./errors
-# Se tiver dependências no futuro, descomente abaixo:
-# WORKDIR /app/errors
-# RUN npm install
-
-# 2. Instalamos e buildamos os schemas
-WORKDIR /app/schemas
-RUN npm install
-RUN npm run build 
-# (Isso garante que a pasta dist/ ou os arquivos .ts finais existam)
+COPY errors /app/errors
+WORKDIR /app/errors
+RUN npm install && npm run build
 
 # 3. Agora cuidamos do serviço Auth
 WORKDIR /app/auth
@@ -60,7 +55,7 @@ COPY --from=builder /app/schemas/src ./src
 # Precisamos criar o diretório destino antes, ou o COPY pode falhar dependendo da versão do Docker
 WORKDIR /app/node_modules/@lidiovargas/errors
 COPY --from=builder /app/errors/package.json .
-COPY --from=builder /app/errors/src ./src
+COPY --from=builder /app/errors/dist ./dist
 
 WORKDIR /app
 
