@@ -1,6 +1,6 @@
 import Ajv from 'ajv/dist/2020';
 import addFormats from 'ajv-formats';
-import { RequestValidationError } from '../errors/request-validation-error';
+import { RequestValidationError } from '@lidiovargas/errors';
 
 const ajv = new Ajv({
   allErrors: true,

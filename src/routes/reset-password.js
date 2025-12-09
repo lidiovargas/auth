@@ -7,8 +7,8 @@ import express from 'express';
 import { validateSchema } from '../middlewares/validate-schema';
 import { PasswordResetToken } from '../models/password-reset';
 import { User } from '../models/user';
-import { MongoServerError } from '../errors/mongo-server-error';
-import { NotFoundError } from '../errors/not-found-error';
+import { MongoServerError } from '@lidiovargas/errors';
+import { NotFoundError } from '@lidiovargas/errors';
 import { Password } from '../services/password';
 
 const router = express.Router();
@@ -20,10 +20,7 @@ router.patch(
     const { token, password } = req.body;
 
     const result = await PasswordResetToken.find({ token });
-    if (result.length === 0)
-      return next(
-        new NotFoundError({ field: 'token', message: 'Token not found' })
-      );
+    if (result.length === 0) return next(new NotFoundError({ field: 'token', message: 'Token not found' }));
 
     // TODO: validate password complexity
 

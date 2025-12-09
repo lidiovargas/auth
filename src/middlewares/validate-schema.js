@@ -3,8 +3,8 @@ import addFormats from 'ajv-formats';
 import $RefParser from '@apidevtools/json-schema-ref-parser';
 import fs from 'fs';
 import path from 'path';
-import { RequestValidationError } from '../errors/request-validation-error';
-import { BadRequestError } from '../errors/bad-request-error';
+import { RequestValidationError } from '@lidiovargas/errors';
+import { BadRequestError } from '@lidiovargas/errors';
 
 const ajv = new Ajv({
   allErrors: true,
@@ -17,10 +17,7 @@ const ajv = new Ajv({
 addFormats(ajv);
 
 // O caminho deve levar até a pasta 'src' da sua biblioteca
-const libSchemaDir = path.resolve(
-  process.cwd(),
-  'node_modules/@lidiovargas/schemas/src'
-);
+const libSchemaDir = path.resolve(process.cwd(), 'node_modules/@lidiovargas/schemas/src');
 
 export const validateSchema = (schemaName) => {
   // Monta o caminho absoluto do arquivo:

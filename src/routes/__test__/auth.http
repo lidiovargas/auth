@@ -36,10 +36,8 @@ Content-Type: application/json
   "email": "vargas.lidio@gmail.com"
 }
 
-
 ### VERIFY RESET TOKEN -- SUCCESS
-GET {{api}}/verify-reset-token/ed14c457c49ffbe785545c905c50db4eac49c97302a24a7fb2a33f752a77ac1f15278d3194b19bcea662254919bad6e4216df52496a4d194eb00e358284a4920
-
+GET {{api}}/verify-reset-token/9d065cec6f58dbdf53f00fa35c78898b048309c49c0ee8c239de62494d15e86f6c6a4f6a6c6e8c8099905d175bc96d480c1db0733181f4ea1a12f6c111c258eb
 
 ### VERIFY RESET TOKEN -- ERROR: invalid
 GET {{api}}/verify-reset-token/abc
@@ -50,7 +48,7 @@ PATCH {{api}}/reset-password
 Content-Type: application/json
 
 {
-  "token": "ed14c457c49ffbe785545c905c50db4eac49c97302a24a7fb2a33f752a77ac1f15278d3194b19bcea662254919bad6e4216df52496a4d194eb00e358284a4920",
+  "token": "9d065cec6f58dbdf53f00fa35c78898b048309c49c0ee8c239de62494d15e86f6c6a4f6a6c6e8c8099905d175bc96d480c1db0733181f4ea1a12f6c111c258eb",
   "password": "blableblibloblu",
   "passwordConfirm": "blableblibloblu"
 }

@@ -8,16 +8,16 @@
 
 import express from 'express';
 import { User } from '../models/user';
-import { BadRequestError } from '../errors/bad-request-error';
+import { BadRequestError } from '@lidiovargas/errors';
 import crypto from 'crypto';
 
 import transporter from '../services/send-email';
 
 import { PasswordResetToken } from '../models/password-reset';
-import { MongoServerError } from '../errors/mongo-server-error';
+import { MongoServerError } from '@lidiovargas/errors';
 
 import { validateSchema } from '../middlewares/validate-schema';
-import { ServerError } from '../errors/server-error';
+import { ServerError } from '@lidiovargas/errors';
 
 const router = express.Router();
 
@@ -84,8 +84,7 @@ router.post(
 
     // send email with the token
     try {
-      const to =
-        process.env.NODE_ENV === 'prod' ? email : 'vargas.lidio@gmail.com';
+      const to = process.env.NODE_ENV === 'prod' ? email : 'vargas.lidio@gmail.com';
 
       if (process.env.NODE_ENV === 'test') {
         return res.status(201).send({ token });

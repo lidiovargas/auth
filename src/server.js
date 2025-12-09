@@ -5,7 +5,7 @@ import { connectDB } from './config/db';
 import cookieParser from 'cookie-parser';
 
 import { errorHandler } from './middlewares/error-handler';
-import { NotFoundError } from './errors/not-found-error';
+import { NotFoundError } from '@lidiovargas/errors';
 
 // Carrega variáveis do .env
 dotenv.config();

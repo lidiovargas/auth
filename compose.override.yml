@@ -15,9 +15,12 @@ services:
       - NODE_ENV=development
     command: npm run dev
     volumes:
-      # Mapeia schemas (apenas arquivos necessários) (= biblioteca sem uso de NPM)
+      # Mapemanto de biblioteca de SCHEMAS (= biblioteca sem uso de NPM)
       - ../schemas/package.json:/app/node_modules/@lidiovargas/schemas/package.json
       - ../schemas/src:/app/node_modules/@lidiovargas/schemas/src
+      # Mapemanto de biblioteca de SCHEMAS (= biblioteca sem uso de NPM)
+      - ../errors/package.json:/app/node_modules/@lidiovargas/errors/package.json
+      - ../errors/src:/app/node_modules/@lidiovargas/errors/src
     develop:
       watch:
         - action: sync
@@ -42,8 +45,7 @@ services:
     networks:
       - http_proxy_net
     healthcheck:
-      test:
-        ['CMD', 'wget', '--spider', '-q', 'http://localhost:8025/api/v1/info']
+      test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:8025/api/v1/info']
       interval: 5s
       timeout: 5s
       retries: 3

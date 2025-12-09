@@ -8,6 +8,13 @@ WORKDIR /app
 # Nota: Isso exige que o contexto do build seja a pasta raiz do monorepo
 COPY schemas ./schemas
 
+# 2. Errors (NOVO)
+# Como errors é puro JS e não tem build step (tsc), basta copiar
+COPY errors ./errors
+# Se tiver dependências no futuro, descomente abaixo:
+# WORKDIR /app/errors
+# RUN npm install
+
 # 2. Instalamos e buildamos os schemas
 WORKDIR /app/schemas
 RUN npm install
@@ -39,7 +46,7 @@ RUN apk --update add --no-cache python3 curl
 # Copia do estágio builder apenas o que é necessário
 COPY --from=builder /app/auth /app
 
-# E precisamos copiar a lib schemas compilada para o lugar certo
+# Copia Lib Schemas compilada para o lugar certo
 WORKDIR /app/node_modules/@lidiovargas/schemas
 COPY --from=builder /app/schemas/package.json .
 COPY --from=builder /app/schemas/dist ./dist
@@ -47,6 +54,14 @@ COPY --from=builder /app/schemas/readme.md .
 # (Opcional) Se você usa source maps ou precisa dos tipos originais, copie src.
 # Mas para produção pura, 'dist' costuma bastar.
 COPY --from=builder /app/schemas/src ./src
+
+# --- NOVO: Copia a Lib Errors ---
+# Como não temos pasta 'dist' (é JS puro), copiamos a 'src'
+# Precisamos criar o diretório destino antes, ou o COPY pode falhar dependendo da versão do Docker
+WORKDIR /app/node_modules/@lidiovargas/errors
+COPY --from=builder /app/errors/package.json .
+COPY --from=builder /app/errors/src ./src
+
 WORKDIR /app
 
 EXPOSE 4010
@@ -55,7 +70,7 @@ CMD ["npm", "start"]
 
 ### Exemplos para build manual
 # Necessário rodar uma pasta antes de `auth` (../), com comando
-# cd ../ && docker build -f auth/Dockerfile.prod . -t auth-prod
+# cd ../ && docker build -f auth/Dockerfile.prod . -t auth-prod && cd auth/
 ### Para verificar se os arquivos estão no lugar correto no container:
 # docker run --rm -it auth-prod sh
 # ls -F node_modules/@lidiovargas/schemas/
